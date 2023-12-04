@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Custom Time Analog and Digital Watch</title>
+    <style>
+        #watch,
+        #analog-watch {
+            font-family: 'Arial', sans-serif;
+            font-size: 24px;
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        #analog-watch {
+            width: 276px;
+            /* Adjust to match the size of Watch.png */
+            height: 388px;
+            /* Adjust to match the size of Watch.png */
+            background: url('Watch.png') no-repeat center center;
+            background-size: contain;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .hand {
+            position: absolute;
+            top: 50%;
+            /* Center vertically in the watch face */
+            left: 50%;
+            /* Center horizontally in the watch face */
+
+            /* Set rotation point */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #second-hand {
+            background: url('seconds.svg') no-repeat center center;
+            background-size: contain;
+            width: 40%;
+            /* Full width of the watch face */
+            height: 40%;
+            /* Full height of the watch face */
+            position: absolute;
+            top: 30%;
+            /* Center vertically in the watch face */
+            left: 30%;
+        }
+
+        #minute-hand {
+            background: url('minutes.svg') no-repeat center center;
+            background-size: contain;
+            width: 40%;
+            /* Full width of the watch face */
+            height: 40%;
+            /* Full height of the watch face */
+            position: absolute;
+            top: 30%;
+            /* Center vertically in the watch face */
+            left: 30%;
+        }
+
+        #hour-hand {
+            background: url('hours.svg') no-repeat center center;
+            background-size: contain;
+            width: 25%;
+            /* Full width of the watch face */
+            height: 25%;
+            /* Full height of the watch face */
+            position: absolute;
+            top: 37.5%;
+            /* Center vertically in the watch face */
+            left: 37.5%;
+        }
+
+        #center-cover {
+            background: url('Center.svg') no-repeat center center;
+            background-size: contain;
+            width: 6%;
+            /* Adjust if needed */
+            height: 6%;
+            /* Adjust if needed */
+            position: absolute;
+            top: 47%;
+            left: 47%;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="watch">00:00:00</div>
+    <div id="analog-watch">
+        <div id="hour-hand" class="hand"></div>
+        <div id="minute-hand" class="hand"></div>
+        <div id="second-hand" class="hand"></div>
+        <div id="center-cover"></div>
+    </div>
+
+    <script>
+        function formatTime(unit) {
+            return unit.toString().padStart(2, '0');
+        }
+
+        function updateWatch() {
+            const now = new Date();
+            const milliseconds = now.getMilliseconds();
+            const rawSeconds = now.getSeconds() + milliseconds / 1000;
+            const rawMinutes = now.getMinutes() + rawSeconds / 60;
+            const rawHours = now.getHours() + rawMinutes / 60;
+
+            // Convert to 100-based system
+            const totalCustomSeconds = Math.floor((rawHours / 24) * 100 * 100 * 100);
+            const customHours = Math.floor(totalCustomSeconds / 10000);
+            const customMinutes = Math.floor((totalCustomSeconds % 10000) / 100);
+            const customSeconds = totalCustomSeconds % 100;
+
+            // Format and display the time
+            const formattedTime = `${formatTime(customHours)}:${formatTime(customMinutes)}:${formatTime(customSeconds)}`;
+            document.getElementById('watch').textContent = formattedTime;
+
+            // Update analog watch hands
+            updateAnalogWatch(customHours, customMinutes, customSeconds);
+
+            // Request the next frame
+            requestAnimationFrame(updateWatch);
+        }
+
+        function updateAnalogWatch(hours, minutes, seconds) {
+            const secondsAngle = (seconds / 100) * 360;
+            const minutesAngle = (minutes / 100) * 360;
+            const hoursAngle = (hours / 100) * 360;
+
+            document.getElementById('second-hand').style.transform = `rotate(${secondsAngle}deg)`;
+            document.getElementById('minute-hand').style.transform = `rotate(${minutesAngle}deg)`;
+            document.getElementById('hour-hand').style.transform = `rotate(${hoursAngle}deg)`;
+        }
+
+        // Start the watch
+        requestAnimationFrame(updateWatch);
+    </script>
+</body>
+
+</html>
